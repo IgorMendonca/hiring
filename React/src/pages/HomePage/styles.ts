@@ -66,3 +66,22 @@ export const SearchButton = styled.button`
   }
 
 `
+
+export const FilterInput = styled.input`
+  margin-left: 15px;
+  padding: 10px;
+  height: 30px;
+  width: 40%;
+  border-radius: 3px;
+  border: solid 0.02px #dcdcdc;
+  color: #29292e;
+  transition: 0.3s;
+
+  :hover {
+    border: solid 1px #835afd;
+  }
+
+  :focus {
+    outline: 0;
+  }
+`

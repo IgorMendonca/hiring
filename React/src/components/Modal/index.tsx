@@ -1,19 +1,26 @@
 
-import {IoMdCloseCircleOutline} from 'react-icons/io'
-import { Container, Content, ModalContainer } from './styles';
+import { MdClose } from 'react-icons/md'
+import { Container, Content, ModalContainer, Title } from './styles';
 
-export function Modal({ id='modal', onClose = () => {}, children}: any) {
+interface ModalProps {
+  id: string;
+  onClose: () => void;
+  children: any
+}
+
+export function Modal(props: ModalProps) {
   const handleOutsideClick = (e: any) => {
-    if(e.target.id === id) onClose();
+    if(e.target.id === props.id) props.onClose();
   }
  
   return (
-    <ModalContainer id={id} onClick={handleOutsideClick}>
+    <ModalContainer id={props.id} onMouseDown={handleOutsideClick}>
       <Container>
         <Content>
-          <h2>{children}</h2>
-          <button onClick={onClose} ><IoMdCloseCircleOutline /></button>
+          <Title>Buscar ações</Title>
+          <button onClick={props.onClose} ><MdClose /></button>
         </Content>
+        {props.children}
       </Container>
     </ModalContainer>
   )
