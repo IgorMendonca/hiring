@@ -13,12 +13,13 @@ export const ModalContainer = styled.div`
 
 export const Container = styled.div`
     color: #29292e;
-    width: 40%;
+    width: 60%;
     height: 80%;
     background-color: #f9f9f9;
-    border-radius: 4px;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
+    
 `
 
 export const Content = styled.div`

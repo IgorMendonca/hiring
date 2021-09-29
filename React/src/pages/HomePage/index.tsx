@@ -1,17 +1,61 @@
 import { Header } from "../../components/Header";
-import { Container, FilterInput, Page, SearchButton, SearchStock, SearchStockContainer, SearchStockContent, TextFieldInput } from "./styles";
+import { Container, Content, ContentStock, FilterContainer, FilterInput, Page, SearchButton, SearchFilterButton, SearchStock, SearchStockContainer, SearchStockContent, TextFieldInput } from "./styles";
 import { BsSearch } from 'react-icons/bs'
 import { ChangeEvent, useCallback, useState } from "react";
 import { Modal } from "../../components/Modal";
+import api from "../../services/api";
+import { SearchEndpointData, SearchEndpointStockItem } from "../../interfaces/SearchEndpointData";
+import { toast } from "react-toastify";
+import CardStock from "./components/CardStock";
+import { useHistory } from "react-router";
 
 export function HomePage() {
+  /**
+   * hooks
+   */
+
+  const history = useHistory()
+
+  /**
+   * consts
+   */
+
+  const BEST_MATCHES = {
+    bestMatches: []
+  } as SearchEndpointData
+
+  /**
+   * states
+   */
   const [isVisibleModal, setIsVisibleModal] = useState(false)
   const [filterStock, setFilterStock] = useState('')
+  const [
+    bestMatchesStockResult,
+    setBestMatchesStockResult
+  ] = useState<SearchEndpointData>(BEST_MATCHES)
 
-  const handleSearchStockMarket = useCallback(() => {
-    
-    setIsVisibleModal(true)
-  }, [])
+  /**
+   * handles
+   */
+
+  const handleClickInCardStock = useCallback((item: SearchEndpointStockItem) => {
+    history.push(`/stock/${item["1. symbol"]}`)
+  }, [history])
+
+  const handleSearchStockMarket = useCallback( async () => {
+    try {
+      const {data}: {data: SearchEndpointData} = await api.get(
+        `?function=SYMBOL_SEARCH&keywords=${filterStock}&apikey=${process.env.REACT_APP_API_KEY}`
+      )
+
+      setBestMatchesStockResult(data)
+
+    } catch(err) {
+      toast.error('Falhou ao obter dados.')
+    } finally {
+      setIsVisibleModal(true)
+    }
+  }, [filterStock])
 
   const submitButtonInput = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if(e.key === 'Enter') {
@@ -27,14 +71,36 @@ export function HomePage() {
           id="modal"
           onClose={() => setIsVisibleModal(false)}
         >
-          <FilterInput 
-            type="text"
-            placeholder="Filtrar"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setFilterStock(e.target.value)
-            }}
-            value={filterStock}
-          />
+          <FilterContainer>
+            <FilterInput 
+              type="text"
+              placeholder="Filtrar"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setFilterStock(e.target.value)
+              }}
+              value={filterStock}
+              onKeyPress={submitButtonInput}
+            />
+            <SearchFilterButton 
+              onClick={handleSearchStockMarket}
+            >
+              <BsSearch size={20}/>
+            </SearchFilterButton>
+          </FilterContainer>
+          <Content>
+            <ContentStock>
+              {
+                bestMatchesStockResult.bestMatches.map(item => (
+                  <CardStock
+                    handleClick={() => handleClickInCardStock(item)}
+                    key={item["1. symbol"]}
+                    stock={item}
+                  />
+                ))
+              }
+              <div style={{height: 10}}></div>
+            </ContentStock>
+          </Content>
         </Modal> 
       }
       <Page>

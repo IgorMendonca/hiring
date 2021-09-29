@@ -64,6 +64,12 @@ export const SearchButton = styled.button`
     cursor: pointer;
     background: ${darken(0.03, '#835afd')};
   }
+`
+
+export const FilterContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding-bottom: 15px;
 
 `
 
@@ -72,7 +78,7 @@ export const FilterInput = styled.input`
   padding: 10px;
   height: 30px;
   width: 40%;
-  border-radius: 3px;
+  border-radius: 3px 0 0 3px;
   border: solid 0.02px #dcdcdc;
   color: #29292e;
   transition: 0.3s;
@@ -84,4 +90,32 @@ export const FilterInput = styled.input`
   :focus {
     outline: 0;
   }
+`
+
+export const SearchFilterButton = styled.button`
+  padding-top: 5px;
+  height: 30px;
+  width: 30px;
+  border: none;
+  background: #835afd;
+  border-radius: 0 3px 3px 0;
+  transition: 0.2s;
+  color: #f9f9f9;
+
+  :hover {
+    cursor: pointer;
+    background: ${darken(0.03, '#835afd')};
+  }
+`
+export const Content = styled.div`
+  overflow: auto;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+
+`
+
+export const ContentStock = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 2fr;
 `
