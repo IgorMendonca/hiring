@@ -77,10 +77,9 @@ const DoughnutChart = (props: CardStockInfoProps) => {
     <Doughnut 
       data={graphData}
       className="graph"
-      //@ts-ignore
-      options={{keepAspectRatio: false , layout: {padding: { bottom: 50 }}}}
-      width={380}
-      height={380}
+      options={{maintainAspectRatio: false , layout: {padding: { bottom: 50 }}}}
+      width={300}
+      height={300}
     />
   )
 }

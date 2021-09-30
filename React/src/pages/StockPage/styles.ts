@@ -7,7 +7,7 @@ export const Container = styled.div`
 `
 
 export const StockDashBoard = styled.div`
-  margin-top: 40px;
+  margin-top: 20px;
   width: 100%;
   display: flex;
   flex: 1;
@@ -16,7 +16,7 @@ export const StockDashBoard = styled.div`
 
 export const DashBoard = styled.div`
   display: flex;
-  max-width: 80%;
+  justify-content: center;
   width: 100%;
 `
 

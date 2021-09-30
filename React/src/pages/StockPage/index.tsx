@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { Header } from "../../components/Header";
+import LineChart from "../../components/LineChart";
 import { globalQuoteProps, globalQuote } from "../../interfaces/GlobalQuote";
 import { SearchEndpointStockItem } from "../../interfaces/SearchEndpointData";
 import api from "../../services/api";
@@ -72,11 +73,9 @@ export function StockPage() {
               globalQuote={globalQuote}
             />
           </AsideCards>
-          
+          <LineChart />
         </DashBoard>
       </StockDashBoard>
-      
-      
     </Container>
   )
 }
