@@ -1,0 +1,11 @@
+export const formatPrice = (value: number | string, currency: string) => {
+  const VALUE = Number(value)
+
+  const { format } = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2
+  })
+
+  return format(VALUE)
+}

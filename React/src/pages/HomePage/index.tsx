@@ -39,7 +39,9 @@ export function HomePage() {
    */
 
   const handleClickInCardStock = useCallback((item: SearchEndpointStockItem) => {
-    history.push(`/stock/${item["1. symbol"]}`)
+    history.push(`/stock/${item["1. symbol"]}`, {
+      params: item
+    })
   }, [history])
 
   const handleSearchStockMarket = useCallback( async () => {
