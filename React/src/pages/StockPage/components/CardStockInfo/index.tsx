@@ -19,10 +19,10 @@ const CardStockInfo = (props: CardStockInfoProps) => {
       </div>
       <Prices>
         <div>
-          <p style={{color: '#ff0000'}}> 
+          <p style={{color: '#008000'}}> 
             {formatPrice(stockInfo["04. low"] || 0, params["8. currency"])}
           </p>
-          <span style={{color: '#ff0000'}}>Baixa</span>
+          <span style={{color: '#008000'}}>Baixa</span>
         </div>
         <div>
           <p style={{color: '#29292e', fontSize: 18}}> 
@@ -31,10 +31,10 @@ const CardStockInfo = (props: CardStockInfoProps) => {
           <span style={{color: '#29292e'}}>Preço</span>
         </div>
         <div>
-          <p style={{color: '#008000'}}> 
+          <p style={{color: '#ff0000'}}> 
             {formatPrice(stockInfo["03. high"] || 0, params["8. currency"])}
           </p>
-          <span style={{color: '#008000'}}>Alta</span>
+          <span style={{color: '#ff0000'}}>Alta</span>
         </div>
       </Prices>
       <StockTradingDateInfo>

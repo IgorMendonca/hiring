@@ -9,3 +9,4 @@ export const formatPrice = (value: number | string, currency: string) => {
 
   return format(VALUE)
 }
+
