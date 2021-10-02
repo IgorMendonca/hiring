@@ -27,6 +27,7 @@ export function HomePage() {
   /**
    * states
    */
+  const [loading, setLoading] = useState(false)
   const [isVisibleModal, setIsVisibleModal] = useState(false)
   const [filterStock, setFilterStock] = useState('')
   const [
@@ -47,8 +48,10 @@ export function HomePage() {
   const handleSearchStockMarket = useCallback( async () => {
     try {
       const {data}: {data: SearchEndpointData} = await api.get(
-        `?function=SYMBOL_SEARCH&keywords=${filterStock}&apikey=${process.env.REACT_APP_API_KEY}`
+        `SYMBOL_SEARCHIBM${process.env.REACT_APP_API_KEY}`
       )
+
+      console.log(data)
 
       setBestMatchesStockResult(data)
 

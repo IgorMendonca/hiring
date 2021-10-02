@@ -4,4 +4,8 @@ const api = axios.create({
     baseURL: "https://www.alphavantage.co/query"
 });
 
-export default api;
+const apitest = axios.create({
+  baseURL: "http://localhost:3938"
+})
+
+export default apitest;

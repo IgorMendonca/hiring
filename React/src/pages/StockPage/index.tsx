@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router";
+import { toast } from "react-toastify";
 import { Header } from "../../components/Header";
 import LineChart from "../../components/LineChart";
+import Loading from "../../components/Loading";
 import { globalQuoteProps, globalQuote } from "../../interfaces/GlobalQuote";
 import { SearchEndpointStockItem } from "../../interfaces/SearchEndpointData";
 import api from "../../services/api";
@@ -29,6 +31,7 @@ export function StockPage() {
    * states
    */
 
+  const [loading, setLoading] = useState(false)
   const [globalQuote, setGlobalQuote] = useState<globalQuote>(GLOBAL_QUOTE)
 
   /**
@@ -37,17 +40,20 @@ export function StockPage() {
 
   const searchGlobalQuote = useCallback( async () => {
     const {data}: {data: globalQuote} = await api.get(
-      `?function=GLOBAL_QUOTE&symbol=${params["1. symbol"]}&apikey=${process.env.REACT_APP_API_KEY}`
+      `GLOBAL_QUOTEIBM${process.env.REACT_APP_API_KEY}`
     )
 
     setGlobalQuote(data)
-  }, [params])
+  }, [])
 
   const loadData = useCallback( async () => {
     try {
+      setLoading(true)
       await Promise.all([searchGlobalQuote()])
     } catch(err) {
-
+      toast.error('erro')
+    } finally {
+      setLoading(false)
     }
   }, [searchGlobalQuote])
 
@@ -58,6 +64,15 @@ export function StockPage() {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  if(loading) {
+    return (
+      <Container>
+        <Header />
+        <Loading />
+      </Container>
+    )
+  }
 
   return (
     <Container>
@@ -73,7 +88,9 @@ export function StockPage() {
               globalQuote={globalQuote}
             />
           </AsideCards>
-          <LineChart />
+          <LineChart 
+            params={params}
+          />
         </DashBoard>
       </StockDashBoard>
     </Container>
