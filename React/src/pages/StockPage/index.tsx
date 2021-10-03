@@ -1,30 +1,37 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import { toast } from "react-toastify";
+import CompareBarChart from "../../components/CompareBarChart";
 import { Header } from "../../components/Header";
+import { globalQuote } from "../../interfaces/GlobalQuote"
 import LineChart from "../../components/LineChart";
 import Loading from "../../components/Loading";
-import { globalQuoteProps, globalQuote } from "../../interfaces/GlobalQuote";
+import { Modal } from "../../components/Modal";
+import { useGlobalQuote } from "../../hooks/useGlobalQuote";
 import { SearchEndpointStockItem } from "../../interfaces/SearchEndpointData";
-import api from "../../services/api";
 import CardStockInfo from "./components/CardStockInfo";
 import CardVariationPercent from "./components/CardVariationPercent";
-import { AsideCards, Container, DashBoard, StockDashBoard } from "./styles";
+import { AnalyticsCharts, AsideCards, Container, DashBoard, StockDashBoard } from "./styles";
+import api from "../../services/api";
+import produce from "immer";
+import { toast } from "react-toastify";
 
 interface propsLocation {
   params: SearchEndpointStockItem
 }
 
 export function StockPage() {
+  const {globalQuote, searchGlobalQuote} = useGlobalQuote()
+
+  /**
+   * hooks
+   */
+
+  const { state } = useLocation<propsLocation>()
+
   /**
    * consts
    */
 
-  const GLOBAL_QUOTE = {
-    "Global Quote": {} as globalQuoteProps
-  } as globalQuote
-
-  const { state } = useLocation<propsLocation>()
   const params = state.params
 
   /**
@@ -32,38 +39,35 @@ export function StockPage() {
    */
 
   const [loading, setLoading] = useState(false)
-  const [globalQuote, setGlobalQuote] = useState<globalQuote>(GLOBAL_QUOTE)
+  const [isVisibleModal, setIsVisibleModal] = useState(false)
+  const [stocksCompare, setStocksCompare] = useState<globalQuote[]>([])
 
-  /**
-   * Callbacks
-   */
-
-  const searchGlobalQuote = useCallback( async () => {
-    const {data}: {data: globalQuote} = await api.get(
-      `GLOBAL_QUOTEIBM${process.env.REACT_APP_API_KEY}`
-    )
-
-    setGlobalQuote(data)
-  }, [])
-
-  const loadData = useCallback( async () => {
+  const handleClick = useCallback( async (item: SearchEndpointStockItem) => {
     try {
-      setLoading(true)
-      await Promise.all([searchGlobalQuote()])
-    } catch(err) {
-      toast.error('erro')
-    } finally {
-      setLoading(false)
-    }
-  }, [searchGlobalQuote])
+      if(stocksCompare.length === 5) {
+        toast.error('Compare até 5 ações por vez')
+        return
+      }
 
-  /**
-   * effects
-   */
+      const {data}: {data: globalQuote} = await api.get(
+        `GLOBAL_QUOTEIBM${process.env.REACT_APP_API_KEY}`
+      )
+  
+      setStocksCompare((stock) => 
+        produce(stock, (draft) => {
+          draft.push(data)
+        })
+      )
+  
+      setIsVisibleModal(false)
+    } catch(err) {
+
+    }
+  }, [stocksCompare])
 
   useEffect(() => {
-    loadData()
-  }, [loadData])
+    searchGlobalQuote()
+  }, [searchGlobalQuote])
 
   if(loading) {
     return (
@@ -75,24 +79,38 @@ export function StockPage() {
   }
 
   return (
-    <Container>
-      <Header />
-      <StockDashBoard>
-        <DashBoard>
-          <AsideCards>
-            <CardStockInfo 
-              globalQuote={globalQuote}
-              params={params}
-            />
-            <CardVariationPercent 
-              globalQuote={globalQuote}
-            />
-          </AsideCards>
-          <LineChart 
-            params={params}
+    <>
+      <Container>
+        { 
+          isVisibleModal && 
+          <Modal 
+            handleCardClick={(item) => handleClick(item)}
+            filterStock={globalQuote["Global Quote"]["01. symbol"]}
+            id="modal"
+            onClose={() => setIsVisibleModal(false)}
           />
-        </DashBoard>
-      </StockDashBoard>
-    </Container>
+        }
+        <Header />
+        <StockDashBoard>
+          <DashBoard>
+            <AsideCards>
+              <CardStockInfo 
+                params={params}
+              />
+              <CardVariationPercent />
+            </AsideCards>
+            <AnalyticsCharts>
+              <LineChart 
+                params={params}
+              />
+              <CompareBarChart 
+                stocksCompare={stocksCompare}
+                callModal={() => setIsVisibleModal(true)}
+              />
+            </AnalyticsCharts>
+          </DashBoard>
+        </StockDashBoard>
+      </Container>
+    </>
   )
 }

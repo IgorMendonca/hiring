@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const InfoVariationContainer = styled.div`
-  margin: 15px 5px;
+  margin: 10px 5px;
   background: #fff;
   height: 45vh;
   width: 45vh;

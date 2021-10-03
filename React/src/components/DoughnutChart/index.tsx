@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Doughnut } from 'react-chartjs-2'
-import { globalQuote } from '../../interfaces/GlobalQuote'
-
-interface CardStockInfoProps {
-  globalQuote: globalQuote
-}
+import { useGlobalQuote } from '../../hooks/useGlobalQuote'
 
 interface graphData {
   labels: string[],
@@ -16,7 +12,8 @@ interface graphData {
   }[]
 }
 
-const DoughnutChart = (props: CardStockInfoProps) => {
+const DoughnutChart = () => {
+  const {globalQuote} = useGlobalQuote()
 
   const GRAPH_DATA = {
     labels: [],
@@ -34,7 +31,7 @@ const DoughnutChart = (props: CardStockInfoProps) => {
   const addGraph = useCallback(() => {
 
     const variant = 
-      Number(props.globalQuote['Global Quote']['10. change percent']?.replace('%', ''))
+      Number(globalQuote['Global Quote']['10. change percent']?.replace('%', ''))
 
     const data: graphData = {
       labels: [
@@ -53,7 +50,7 @@ const DoughnutChart = (props: CardStockInfoProps) => {
 
     setGraphData(data)
 
-  }, [props])
+  }, [globalQuote])
 
   const loadData = useCallback( async () => {
     setLoading(true)

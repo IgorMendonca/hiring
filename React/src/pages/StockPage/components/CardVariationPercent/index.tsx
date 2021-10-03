@@ -1,12 +1,7 @@
 import DoughnutChart from "../../../../components/DoughnutChart"
-import { globalQuote } from "../../../../interfaces/GlobalQuote"
 import { CardHeader, GraphContainer, InfoVariationContainer } from "./styles"
 
-interface CardStockInfoProps {
-  globalQuote: globalQuote
-}
-
-const CardVariationPercent = (props: CardStockInfoProps) => {
+const CardVariationPercent = () => {
 
   return (
     <InfoVariationContainer>
@@ -14,9 +9,7 @@ const CardVariationPercent = (props: CardStockInfoProps) => {
         <span>Variação</span>
       </CardHeader>
       <GraphContainer>
-        <DoughnutChart 
-          globalQuote={props.globalQuote}
-        />
+        <DoughnutChart />
       </GraphContainer>
     </InfoVariationContainer>
   )

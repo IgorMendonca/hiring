@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Chart } from 'react-google-charts'
-import { addDays, subMonths } from 'date-fns'
+import { addDays, subDays, subMonths } from 'date-fns'
 import produce from 'immer'
 import { SearchEndpointStockItem } from '../../interfaces/SearchEndpointData'
 import { TimeSeriesDaily, TimeSeriesMonthly, TimeSeriesWeekly } from '../../interfaces/TimeSeries'
@@ -245,7 +245,7 @@ const LineChart = (props: propsLocation) => {
               }}
               rootProps={{ 'data-testid': '1' }}
             />
-          : <NoDataContainer>
+          : !loading && <NoDataContainer>
               <span>Sem dados no período informado</span>
             </NoDataContainer>
         }

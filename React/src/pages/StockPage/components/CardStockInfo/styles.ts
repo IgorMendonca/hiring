@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const InfoBar = styled.div`
   padding: 5px;
-  margin: 5px;
+  margin: 15px 5px;
   background: #fff;
   height: 25vh;
   width: 45vh;

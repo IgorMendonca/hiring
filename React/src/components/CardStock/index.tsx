@@ -1,9 +1,9 @@
-import { SearchEndpointStockItem } from "../../../../interfaces/SearchEndpointData"
+import { SearchEndpointStockItem } from "../../interfaces/SearchEndpointData"
 import { Card, CartContent, InfoStock, TitleStock } from "./styles"
 
 interface CardStockProps {
   stock: SearchEndpointStockItem
-  handleClick: () => void
+  handleClick?: () => void
 }
 
 const CardStock = (props: CardStockProps) => {
