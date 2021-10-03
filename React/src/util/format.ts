@@ -11,3 +11,4 @@ export const formatPrice = (value: number | string, currency: string) => {
 }
 
 export const formatDataString = 'dd/MM/yyyy'
+export const formatDataStringISO = 'yyyy-MM-dd'

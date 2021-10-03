@@ -8,15 +8,14 @@ export const Container = styled.div`
 
 export const StockDashBoard = styled.div`
   margin-top: 20px;
-  width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 `
 
 export const DashBoard = styled.div`
   display: flex;
   justify-content: center;
-  width: 90%;
+  width: 100%;
 `
 
 export const AsideCards = styled.div`
@@ -25,7 +24,7 @@ export const AsideCards = styled.div`
 `
 
 export const AnalyticsCharts = styled.div`
-  width: 100%;
+  width: 70%;
   display: flex;
   flex-direction: column;
 `

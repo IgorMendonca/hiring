@@ -14,6 +14,7 @@ import { AnalyticsCharts, AsideCards, Container, DashBoard, StockDashBoard } fro
 import api from "../../services/api";
 import produce from "immer";
 import { toast } from "react-toastify";
+import Simulator from "../../components/Simulator";
 
 interface propsLocation {
   params: SearchEndpointStockItem
@@ -109,6 +110,7 @@ export function StockPage() {
               />
             </AnalyticsCharts>
           </DashBoard>
+          <Simulator />
         </StockDashBoard>
       </Container>
     </>
