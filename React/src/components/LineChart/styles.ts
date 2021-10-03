@@ -17,6 +17,12 @@ export const GraphContainer = styled.div`
   box-shadow: 0 3px 3px rgba(0,0,0, 0.3);
 `
 
+export const HeaderSelect = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+`
+
 export const ChartTypeFilter = styled.div`
   display: flex;
   background: #fff;
@@ -24,14 +30,14 @@ export const ChartTypeFilter = styled.div`
   width: 40%;
   border-radius: 8px 8px 0 0 ;
   box-shadow: 0 3px 3px rgba(0,0,0, 0.3);
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   text-align: center;
 
   & div {
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
     flex: 1;
     color: #a0a0a0;
     height: 100%;
@@ -60,4 +66,17 @@ export const ChartTypeFilter = styled.div`
       }
     }
   }
+`
+
+export const ContainerDataPicker = styled.div`
+  display: flex;
+`
+
+export const NoDataContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #a0a0a0;
 `

@@ -1,12 +1,12 @@
-import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Chart } from 'react-google-charts'
-import { addDays } from 'date-fns'
+import { addDays, subMonths } from 'date-fns'
 import produce from 'immer'
 import { SearchEndpointStockItem } from '../../interfaces/SearchEndpointData'
 import { TimeSeriesDaily, TimeSeriesMonthly, TimeSeriesWeekly } from '../../interfaces/TimeSeries'
 import api from '../../services/api'
-import { ChartTypeFilter, Container, GraphContainer } from './styles'
-import Loading from '../Loading'
+import { ChartTypeFilter, Container, ContainerDataPicker, GraphContainer, HeaderSelect, NoDataContainer } from './styles'
+import DataPicker from '../DataPicker'
 
 interface propsLocation {
   params: SearchEndpointStockItem
@@ -15,12 +15,22 @@ interface propsLocation {
 const LineChart = (props: propsLocation) => {
   const {params} = props
 
+  const DATE_FILTER = {
+    startDate: subMonths(new Date(), 1),
+    endDate: new Date()
+  }
+
   const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState('daily')
+  const [dateFilter, setDateFilter] = useState(DATE_FILTER)
   
   const [dataGraph, setDataGraph] = useState<any[]>([[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']])
 
   const searchTimeSeriesDaily = useCallback( async () => {
+    if(typeFilter !== 'daily') {
+      return
+    }
+
     setLoading(true)
 
     setDataGraph(state => (
@@ -32,7 +42,9 @@ const LineChart = (props: propsLocation) => {
     )
 
     const days = Object.keys(data['Time Series (Daily)'])
-    const result = days.filter(day => new Date(day) > new Date('2021-01-01'))
+    const result = days.filter(
+      day => addDays(new Date(day),1) >= dateFilter.startDate && addDays(new Date(day),1) <= dateFilter.endDate
+    )
 
     result.forEach(day => {
       const arrTemp: any[] = []
@@ -51,9 +63,13 @@ const LineChart = (props: propsLocation) => {
 
     setLoading(false)
 
-  }, [])
+  }, [dateFilter, typeFilter])
 
   const searchTimeSeriesWeekly = useCallback( async () => {
+    if(typeFilter !== 'weekly') {
+      return
+    }
+
     setLoading(true)
 
     setDataGraph(state => (
@@ -65,7 +81,9 @@ const LineChart = (props: propsLocation) => {
     )
 
     const days = Object.keys(data['Weekly Time Series'])
-    const result = days.filter(day => new Date(day) > new Date('2021-01-01'))
+    const result = days.filter(
+      day => addDays(new Date(day),1) >= dateFilter.startDate && addDays(new Date(day),1) <= dateFilter.endDate
+    )
 
     result.forEach(day => {
       const arrTemp: any[] = []
@@ -85,9 +103,13 @@ const LineChart = (props: propsLocation) => {
     })
 
     setLoading(false)
-  }, [])
+  }, [dateFilter, typeFilter])
 
   const searchTimeSeriesMonthly = useCallback( async () => {
+    if(typeFilter !== 'monthly') {
+      return
+    }
+
     setLoading(true)
 
     setDataGraph(state => (
@@ -99,8 +121,10 @@ const LineChart = (props: propsLocation) => {
     )
 
     const days = Object.keys(data['Monthly Time Series'])
-    const result = days.filter(day => new Date(day) > new Date('2021-01-01'))
-    
+    const result = days.filter(
+      day => addDays(new Date(day),1) >= dateFilter.startDate && addDays(new Date(day),1) <= dateFilter.endDate
+    )
+
     result.forEach(day => {
       const arrTemp: any[] = []
       const x = addDays(new Date(day),1)
@@ -117,18 +141,18 @@ const LineChart = (props: propsLocation) => {
     })
 
     setLoading(false)
-  }, [])
+  }, [dateFilter, typeFilter])
 
 
   const loadData = useCallback( async () => {
     try {
-      await Promise.all([searchTimeSeriesDaily()])
+      await Promise.all([searchTimeSeriesDaily(), searchTimeSeriesWeekly(), searchTimeSeriesMonthly()])
     } catch (err) {
 
     } finally {
     }
 
-  }, [searchTimeSeriesDaily])
+  }, [searchTimeSeriesDaily, searchTimeSeriesWeekly, searchTimeSeriesMonthly])
 
   useEffect(() => {
     loadData()
@@ -136,67 +160,94 @@ const LineChart = (props: propsLocation) => {
 
   return (
     <Container>
-      <ChartTypeFilter>
-        <div 
-          className={typeFilter === 'daily' ? 'select-day' : ''}
-          onClick={() => {
-            if(typeFilter !== 'daily') {
-              setTypeFilter((state) => (
-                state = 'daily'
-              ))
-              searchTimeSeriesDaily()
-            }
-          }}
-        >
-          <p>Diário</p>
-        </div>
-        <div 
-          className={typeFilter === 'weekly' ? 'select-week' : ''}
-          onClick={() => {
-            if(typeFilter !== 'weekly') {
-              setTypeFilter((state) => (
-                state = 'weekly'
-              ))
-              searchTimeSeriesWeekly()
-            }
-          }}
-        >
-          <p>Semanal</p>
-        </div>
-        <div 
-          className={typeFilter === 'monthly' ? 'select-month' : ''}
-          onClick={() => {
-            if(typeFilter !== 'monthly') {
-              setTypeFilter((state) => (
-                state = 'monthly'
-              ))
-              searchTimeSeriesMonthly()
+      <HeaderSelect>
+        <ChartTypeFilter>
+          <div>
+            <div 
+              className={typeFilter === 'daily' ? 'select-day' : ''}
+              onClick={() => {
+                if(typeFilter !== 'daily') {
+                  setTypeFilter((state) => (
+                    state = 'daily'
+                  ))
+                  searchTimeSeriesDaily()
+                }
+              }}
+            >
+              <p>Diário</p>
+            </div>
+            <div 
+              className={typeFilter === 'weekly' ? 'select-week' : ''}
+              onClick={() => {
+                if(typeFilter !== 'weekly') {
+                  setTypeFilter((state) => (
+                    state = 'weekly'
+                  ))
+                  searchTimeSeriesWeekly()
+                }
+              }}
+            >
+              <p>Semanal</p>
+            </div>
+            <div 
+              className={typeFilter === 'monthly' ? 'select-month' : ''}
+              onClick={() => {
+                if(typeFilter !== 'monthly') {
+                  setTypeFilter((state) => (
+                    state = 'monthly'
+                  ))
+                  searchTimeSeriesMonthly()
 
-            }
-          }}
-        >
-          <p>Mensal</p>
-        </div>
-      </ChartTypeFilter>
-      <GraphContainer>
-        {!loading && 
-          <Chart
-            style={{borderRadius: 8, padding: 8}}
-            width={'900px'}
-            height={'200px'}
-            chartType="LineChart"
-            loader={<div>Loading Chart</div>}
-            data={dataGraph}
-            options={{
-              hAxis: {
-                title: 'Tempo',
-              },
-              vAxis: {
-                title: 'Valor',
-              },
+                }
+              }}
+            >
+              <p>Mensal</p>
+            </div>
+          </div>
+        </ChartTypeFilter>
+        <ContainerDataPicker>
+          <DataPicker 
+            label='Data inicial'
+            fullWidth
+            value={dateFilter.startDate}
+            onChange={(startDate: any) => {
+              setDateFilter({...dateFilter, startDate})
             }}
-            rootProps={{ 'data-testid': '1' }}
           />
+          <DataPicker 
+            label='Data final'
+            fullWidth
+            value={dateFilter.endDate}
+            onChange={(endDate: any) => {
+              setDateFilter({...dateFilter, endDate})
+            }}
+          />
+        </ContainerDataPicker>
+      </HeaderSelect>
+      <GraphContainer>
+        {
+          dataGraph.length > 1 ?
+          !loading && 
+            <Chart
+              style={{borderRadius: 8, padding: 8}}
+              width={'900px'}
+              height={'200px'}
+              chartType="LineChart"
+              loader={<div>Loading Chart</div>}
+              data={dataGraph}
+              options={{
+                hAxis: {
+                  title: 'Tempo',
+                },
+                vAxis: {
+                  title: 'Valor',
+                },
+              }}
+              rootProps={{ 'data-testid': '1' }}
+            />
+          : <NoDataContainer>
+              <span>Sem dados no período informado</span>
+            </NoDataContainer>
         }
       </GraphContainer>
     </Container>
