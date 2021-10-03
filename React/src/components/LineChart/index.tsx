@@ -1,4 +1,4 @@
-import { SetStateAction, useCallback, useEffect, useState } from 'react'
+import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import { Chart } from 'react-google-charts'
 import { addDays } from 'date-fns'
 import produce from 'immer'
@@ -15,78 +15,124 @@ interface propsLocation {
 const LineChart = (props: propsLocation) => {
   const {params} = props
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState('daily')
-  const [timeSeriesDaily, setTimeSeriesDaily] = useState<TimeSeriesDaily>({} as TimeSeriesDaily)
-  const [timeSeriesWeekly, setTimeSeriesWeekly] = useState<TimeSeriesWeekly>({} as TimeSeriesWeekly)
-  const [timeSeriesMonthly, setTimeSeriesMonthly] = useState<TimeSeriesMonthly>({} as TimeSeriesMonthly)
   
   const [dataGraph, setDataGraph] = useState<any[]>([[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']])
 
   const searchTimeSeriesDaily = useCallback( async () => {
+    setLoading(true)
+
+    setDataGraph(state => (
+      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
+    ))
+
     const {data}: {data: TimeSeriesDaily} = await api.get(
       `TIME_SERIES_DAILYIBM${process.env.REACT_APP_API_KEY}`
     )
 
-    setTimeSeriesDaily((state) => ({
-      ...state, data
-    }))
+    const days = Object.keys(data['Time Series (Daily)'])
+    const result = days.filter(day => new Date(day) > new Date('2021-01-01'))
 
-    console.log(timeSeriesDaily)
+    result.forEach(day => {
+      const arrTemp: any[] = []
+      const x = addDays(new Date(day),1)
+      const close = Number(data['Time Series (Daily)'][day]['4. close'])
+      const high = Number(data['Time Series (Daily)'][day]['2. high'])
+      const low = Number(data['Time Series (Daily)'][day]['3. low'])
+      arrTemp.push(x, close, high, low)
 
-    // const days = Object.keys(data['Time Series (Daily)'])
+      setDataGraph((prev) =>
+        produce(prev, (draft) => {
+          draft.push(arrTemp)
+        })  
+      )
+    })
 
-    // days.forEach(day => {
-    //   const arrTemp: any[] = []
-    //   const x = addDays(new Date(day),1)
-    //   const close = Number(data['Time Series (Daily)'][day]['4. close'])
-    //   const high = Number(data['Time Series (Daily)'][day]['2. high'])
-    //   const low = Number(data['Time Series (Daily)'][day]['3. low'])
-    //   arrTemp.push(x, close, high, low)
+    setLoading(false)
 
-    //   setDataGraph((prev) =>
-    //     produce(prev, (draft) => {
-    //       draft.push(arrTemp)
-    //     })  
-    //   )
-    // })
-    
   }, [])
 
   const searchTimeSeriesWeekly = useCallback( async () => {
+    setLoading(true)
+
+    setDataGraph(state => (
+      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
+    ))
+
     const {data}: {data: TimeSeriesWeekly} = await api.get(
       `TIME_SERIES_WEEKLYIBM${process.env.REACT_APP_API_KEY}`
     )
 
-    setTimeSeriesWeekly(data)
+    const days = Object.keys(data['Weekly Time Series'])
+    const result = days.filter(day => new Date(day) > new Date('2021-01-01'))
+
+    result.forEach(day => {
+      const arrTemp: any[] = []
+      const x = addDays(new Date(day),1)
+      const close = Number(data['Weekly Time Series'][day]['4. close'])
+      const high = Number(data['Weekly Time Series'][day]['2. high'])
+      const low = Number(data['Weekly Time Series'][day]['3. low'])
+      arrTemp.push(x, close, high, low)
+
+      console.log(arrTemp)
+
+      setDataGraph((prev) =>
+        produce(prev, (draft) => {
+          draft.push(arrTemp)
+        })  
+      )
+    })
+
+    setLoading(false)
   }, [])
 
   const searchTimeSeriesMonthly = useCallback( async () => {
+    setLoading(true)
+
+    setDataGraph(state => (
+      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
+    ))
+
     const {data}: {data: TimeSeriesMonthly} = await api.get(
       `TIME_SERIES_MONTHLYIBM${process.env.REACT_APP_API_KEY}`
     )
 
-    setTimeSeriesMonthly(data)
+    const days = Object.keys(data['Monthly Time Series'])
+    const result = days.filter(day => new Date(day) > new Date('2021-01-01'))
+    
+    result.forEach(day => {
+      const arrTemp: any[] = []
+      const x = addDays(new Date(day),1)
+      const close = Number(data['Monthly Time Series'][day]['4. close'])
+      const high = Number(data['Monthly Time Series'][day]['2. high'])
+      const low = Number(data['Monthly Time Series'][day]['3. low'])
+      arrTemp.push(x, close, high, low)
+
+      setDataGraph((prev) =>
+        produce(prev, (draft) => {
+          draft.push(arrTemp)
+        })  
+      )
+    })
+
+    setLoading(false)
   }, [])
 
 
   const loadData = useCallback( async () => {
     try {
-      await Promise.all([searchTimeSeriesDaily(), searchTimeSeriesWeekly(), searchTimeSeriesMonthly()])
+      await Promise.all([searchTimeSeriesDaily()])
     } catch (err) {
 
     } finally {
     }
 
-  }, [searchTimeSeriesDaily, searchTimeSeriesWeekly, searchTimeSeriesMonthly])
+  }, [searchTimeSeriesDaily])
 
   useEffect(() => {
     loadData()
   }, [loadData])
-
-  if(loading) {
-    return <Loading />
-  }
 
   return (
     <Container>
@@ -95,7 +141,9 @@ const LineChart = (props: propsLocation) => {
           className={typeFilter === 'daily' ? 'select-day' : ''}
           onClick={() => {
             if(typeFilter !== 'daily') {
-              setTypeFilter('daily')
+              setTypeFilter((state) => (
+                state = 'daily'
+              ))
               searchTimeSeriesDaily()
             }
           }}
@@ -106,7 +154,10 @@ const LineChart = (props: propsLocation) => {
           className={typeFilter === 'weekly' ? 'select-week' : ''}
           onClick={() => {
             if(typeFilter !== 'weekly') {
-              setTypeFilter('weekly')
+              setTypeFilter((state) => (
+                state = 'weekly'
+              ))
+              searchTimeSeriesWeekly()
             }
           }}
         >
@@ -116,7 +167,11 @@ const LineChart = (props: propsLocation) => {
           className={typeFilter === 'monthly' ? 'select-month' : ''}
           onClick={() => {
             if(typeFilter !== 'monthly') {
-              setTypeFilter('monthly')
+              setTypeFilter((state) => (
+                state = 'monthly'
+              ))
+              searchTimeSeriesMonthly()
+
             }
           }}
         >
@@ -124,28 +179,27 @@ const LineChart = (props: propsLocation) => {
         </div>
       </ChartTypeFilter>
       <GraphContainer>
-        <Chart
-          style={{borderRadius: 8, padding: 8}}
-          width={'900px'}
-          height={'200px'}
-          chartType="LineChart"
-          loader={<div>Loading Chart</div>}
-          data={dataGraph}
-          options={{
-            hAxis: {
-              title: 'Tempo',
-            },
-            vAxis: {
-              title: 'Valor',
-            },
-          }}
-          rootProps={{ 'data-testid': '1' }}
-        />
+        {!loading && 
+          <Chart
+            style={{borderRadius: 8, padding: 8}}
+            width={'900px'}
+            height={'200px'}
+            chartType="LineChart"
+            loader={<div>Loading Chart</div>}
+            data={dataGraph}
+            options={{
+              hAxis: {
+                title: 'Tempo',
+              },
+              vAxis: {
+                title: 'Valor',
+              },
+            }}
+            rootProps={{ 'data-testid': '1' }}
+          />
+        }
       </GraphContainer>
     </Container>
-   
-    
-      
   )
 } 
 

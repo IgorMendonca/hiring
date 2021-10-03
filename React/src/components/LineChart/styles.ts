@@ -2,12 +2,15 @@ import { lighten } from 'polished';
 import styled from 'styled-components'
 
 export const Container = styled.div`
+  width: 70%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   margin: 5px;
 `
 
 export const GraphContainer = styled.div`
+  width: 100%;
   height: 35vh;
   background: #fff;
   border-radius: 0 8px 8px 8px;
