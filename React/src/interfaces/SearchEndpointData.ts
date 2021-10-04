@@ -12,4 +12,5 @@ export interface SearchEndpointStockItem {
 
 export interface SearchEndpointData {
   'bestMatches': SearchEndpointStockItem[]
+  Note?: string
 }

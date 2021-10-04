@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Chart } from 'react-google-charts'
-import { addDays, subDays, subMonths } from 'date-fns'
+import { addDays, subMonths } from 'date-fns'
 import produce from 'immer'
 import { SearchEndpointStockItem } from '../../interfaces/SearchEndpointData'
 import { TimeSeriesDaily, TimeSeriesMonthly, TimeSeriesWeekly } from '../../interfaces/TimeSeries'
-import api from '../../services/api'
+import api, { apiKey } from '../../services/api'
 import { ChartTypeFilter, Container, ContainerDataPicker, GraphContainer, HeaderSelect, NoDataContainer } from './styles'
 import DataPicker from '../DataPicker'
+import { toast } from 'react-toastify'
 
 interface propsLocation {
   params: SearchEndpointStockItem
@@ -38,8 +39,13 @@ const LineChart = (props: propsLocation) => {
     ))
 
     const {data}: {data: TimeSeriesDaily} = await api.get(
-      `TIME_SERIES_DAILYIBM${process.env.REACT_APP_API_KEY}`
+      `?function=TIME_SERIES_DAILY&symbol=${params['1. symbol']}&apikey=${apiKey}`
     )
+
+    if(data.Note) {
+      toast.error('Você só pode fazer 5 consultas por minuto')
+      return
+    }
 
     const days = Object.keys(data['Time Series (Daily)'])
     const result = days.filter(
@@ -63,7 +69,7 @@ const LineChart = (props: propsLocation) => {
 
     setLoading(false)
 
-  }, [dateFilter, typeFilter])
+  }, [dateFilter, typeFilter, params])
 
   const searchTimeSeriesWeekly = useCallback( async () => {
     if(typeFilter !== 'weekly') {
@@ -77,8 +83,13 @@ const LineChart = (props: propsLocation) => {
     ))
 
     const {data}: {data: TimeSeriesWeekly} = await api.get(
-      `TIME_SERIES_WEEKLYIBM${process.env.REACT_APP_API_KEY}`
+      `?function=TIME_SERIES_WEEKLY&symbol=${params['1. symbol']}&apikey=${apiKey}`
     )
+    
+    if(data.Note) {
+      toast.error('Você só pode fazer 5 consultas por minuto')
+      return
+    }
 
     const days = Object.keys(data['Weekly Time Series'])
     const result = days.filter(
@@ -103,7 +114,7 @@ const LineChart = (props: propsLocation) => {
     })
 
     setLoading(false)
-  }, [dateFilter, typeFilter])
+  }, [dateFilter, typeFilter, params])
 
   const searchTimeSeriesMonthly = useCallback( async () => {
     if(typeFilter !== 'monthly') {
@@ -117,8 +128,13 @@ const LineChart = (props: propsLocation) => {
     ))
 
     const {data}: {data: TimeSeriesMonthly} = await api.get(
-      `TIME_SERIES_MONTHLYIBM${process.env.REACT_APP_API_KEY}`
+      `?function=TIME_SERIES_MONTHLY&symbol=${params['1. symbol']}&apikey=${apiKey}`
     )
+    
+    if(data.Note) {
+      toast.error('Você só pode fazer 5 consultas por minuto')
+      return
+    }
 
     const days = Object.keys(data['Monthly Time Series'])
     const result = days.filter(
@@ -141,17 +157,13 @@ const LineChart = (props: propsLocation) => {
     })
 
     setLoading(false)
-  }, [dateFilter, typeFilter])
+  }, [dateFilter, typeFilter, params])
 
 
   const loadData = useCallback( async () => {
-    try {
-      await Promise.all([searchTimeSeriesDaily(), searchTimeSeriesWeekly(), searchTimeSeriesMonthly()])
-    } catch (err) {
 
-    } finally {
-    }
-
+    await Promise.all([searchTimeSeriesDaily(), searchTimeSeriesWeekly(), searchTimeSeriesMonthly()])
+    
   }, [searchTimeSeriesDaily, searchTimeSeriesWeekly, searchTimeSeriesMonthly])
 
   useEffect(() => {

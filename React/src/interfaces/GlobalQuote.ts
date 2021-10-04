@@ -1,5 +1,6 @@
 export interface globalQuote {
   "Global Quote": globalQuoteProps
+  Note?: string
 }
 
 export interface globalQuoteProps {

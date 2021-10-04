@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import CompareBarChart from "../../components/CompareBarChart";
 import { Header } from "../../components/Header";
 import { globalQuote } from "../../interfaces/GlobalQuote"
@@ -11,7 +11,7 @@ import { SearchEndpointStockItem } from "../../interfaces/SearchEndpointData";
 import CardStockInfo from "./components/CardStockInfo";
 import CardVariationPercent from "./components/CardVariationPercent";
 import { AnalyticsCharts, AsideCards, Container, DashBoard, StockDashBoard } from "./styles";
-import api from "../../services/api";
+import api, { apiKey } from "../../services/api";
 import produce from "immer";
 import { toast } from "react-toastify";
 import Simulator from "../../components/Simulator";
@@ -23,12 +23,13 @@ interface propsLocation {
 export function StockPage() {
   const FAVORITEKEY = '@web-app/favorites'
 
-  const {globalQuote, searchGlobalQuote} = useGlobalQuote()
+  const {globalQuote, setGlobalQuoteFunc} = useGlobalQuote()
 
   /**
    * hooks
    */
 
+  const history = useHistory()
   const { state } = useLocation<propsLocation>()
 
   /**
@@ -47,43 +48,90 @@ export function StockPage() {
   const [favorites, setFavorites] = useState<SearchEndpointStockItem[]>([])
 
   const handleClick = useCallback( async (item: SearchEndpointStockItem) => {
-    try {
-      if(stocksCompare.length === 5) {
-        toast.error('Compare até 5 ações por vez')
-        return
-      }
-
-      const {data}: {data: globalQuote} = await api.get(
-        `GLOBAL_QUOTEIBM${process.env.REACT_APP_API_KEY}`
-      )
-  
-      setStocksCompare((stock) => 
-        produce(stock, (draft) => {
-          draft.push(data)
-        })
-      )
-  
-      setIsVisibleModal(false)
-    } catch(err) {
-
+    if(stocksCompare.length === 5) {
+      toast.error('Compare até 5 ações por vez')
+      return
     }
+
+    const {data}: {data: globalQuote} = await api.get(
+      `?function=GLOBAL_QUOTE&symbol=${item["1. symbol"]}&apikey=${apiKey}`
+    )
+
+    if(data.Note) {
+      toast.error('Você só pode fazer 5 consultas por minuto')
+      return
+    }
+
+    setStocksCompare((stock) => 
+      produce(stock, (draft) => {
+        draft.push(data)
+      })
+    )
+
+    setIsVisibleModal(false)
   }, [stocksCompare])
+
+  const removeItem = useCallback((index: number) => {
+    setStocksCompare((prev) => 
+      produce(prev, (draft) => {
+        draft.splice(index, 1)
+      })
+    )
+  }, [])
 
   const handleAddToPortfolio = useCallback(() => {
     try {
-      const portfolio = localStorage.getItem(FAVORITEKEY)
-        console.log(portfolio)
+      const exists = favorites.find(favorite => 
+        favorite["1. symbol"] === params["1. symbol"]
+      )
 
-        toast.success('Ação removida com sucesso')
-        
-      
-      setFavorites((prev) => [params, ...prev])
-      toast.success('Adicionado com sucesso')
+      if(!exists) {    
+        setFavorites((prev) => [params, ...prev])
+        toast.success('Adicionado com sucesso')
+        return
+      }
+
+      favorites.forEach((favorite, index) => {
+        if(favorite["1. symbol"] === params["1. symbol"]) {
+          setFavorites((prev) => 
+            produce(prev, (draft) => {
+              draft.splice(index, 1)
+            })
+          )
+        }
+      }) 
+
+      toast.success('Ação removida com sucesso')
+
     } catch (err) {
       const message = 'Erro'
       toast.error(message)
     }
   }, [favorites, params])
+
+  const searchGlobalQuote = useCallback( async (item: SearchEndpointStockItem) => {
+    const {data}: {data: globalQuote} = await api.get(
+      `?function=GLOBAL_QUOTE&symbol=${item["1. symbol"]}&apikey=${apiKey}`
+    )
+
+    if(data.Note) {
+      toast.error('Você só pode fazer 5 consultas por minuto')
+      history.push('/')
+      return
+    }
+    console.log('1')
+
+    setGlobalQuoteFunc(data)
+  }, [setGlobalQuoteFunc, history])
+
+  const loadData = useCallback( async () => {
+      setLoading(true) 
+
+      await searchGlobalQuote(params)
+   
+      setLoading(false)
+    
+  }, [searchGlobalQuote, params])
 
   useEffect(() => {
     const persistFavorite = localStorage.getItem(FAVORITEKEY)
@@ -98,8 +146,8 @@ export function StockPage() {
   }, [favorites])
 
   useEffect(() => {
-    searchGlobalQuote()
-  }, [searchGlobalQuote])
+    loadData()
+  }, [loadData])
 
   if(loading) {
     return (
@@ -137,6 +185,7 @@ export function StockPage() {
                 params={params}
               />
               <CompareBarChart 
+                removeItemToCompare={(index) => removeItem(index)}
                 stocksCompare={stocksCompare}
                 callModal={() => setIsVisibleModal(true)}
               />

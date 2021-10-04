@@ -3,7 +3,7 @@ import { BsSearch } from 'react-icons/bs';
 import { MdClose } from 'react-icons/md'
 import { toast } from 'react-toastify';
 import { SearchEndpointData, SearchEndpointStockItem } from '../../interfaces/SearchEndpointData';
-import api from '../../services/api';
+import api, { apiKey } from '../../services/api';
 import CardStock from '../CardStock';
 import Loading from '../Loading';
 import { Container, Content, ContentHeader, ContentStock, FilterContainer, FilterInput, ModalContainer, SearchFilterButton, Title } from './styles';
@@ -22,41 +22,47 @@ export function Modal(props: ModalProps) {
   } as SearchEndpointData
 
   const [loading, setLoading] = useState(false)
+  const [filterStockInput, setFilterStockInput] = useState(props.filterStock)
   const [filterStock, setFilterStock] = useState(props.filterStock)
   const [
     bestMatchesStockResult,
     setBestMatchesStockResult
   ] = useState<SearchEndpointData>(BEST_MATCHES)
 
-  const handleSearchStockMarket = useCallback( async () => {
-    try {
-      setLoading(true)
-      const {data}: {data: SearchEndpointData} = await api.get(
-        `SYMBOL_SEARCHIBM${process.env.REACT_APP_API_KEY}`
-      )
-
-      setBestMatchesStockResult(data)
-
-    } catch(err) {
-      toast.error('Falhou ao obter dados.')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
   const submitButtonInput = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if(e.key === 'Enter') {
-      handleSearchStockMarket()
+      setFilterStock(filterStockInput)
     }
-  }, [handleSearchStockMarket])
+  }, [filterStockInput])
 
   const handleOutsideClick = (e: any) => {
     if(e.target.id === props.id) props.onClose();
   }
 
   useEffect(() => {
+    const handleSearchStockMarket = async () => {
+      try {
+        setLoading(true)
+        const {data}: {data: SearchEndpointData} = await api.get(
+          `?function=SYMBOL_SEARCH&keywords=${filterStock}&apikey=${apiKey}`
+        )
+
+        if(data.Note) {
+          toast.error('Você só pode fazer 5 consultas por minuto')
+          props.onClose()
+        }
+  
+        setBestMatchesStockResult(data)
+  
+      } catch(err) {
+        toast.error('Falhou ao obter dados.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     handleSearchStockMarket()
-  }, [handleSearchStockMarket])
+  }, [filterStock, props])
  
   if(loading) {
     return (
@@ -76,13 +82,19 @@ export function Modal(props: ModalProps) {
             type="text"
             placeholder="Filtrar"
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setFilterStock(e.target.value)
+              setFilterStockInput(e.target.value)
             }}
-            value={filterStock}
-            onKeyPress={submitButtonInput}
+            value={filterStockInput}
+            onKeyPress={(e: React.KeyboardEvent<HTMLDivElement>) => {
+              submitButtonInput(e)
+            }}
           />
           <SearchFilterButton 
-            onClick={handleSearchStockMarket}
+            onClick={() => {
+              setFilterStock(state => 
+                state = filterStockInput  
+              )
+            }}
           >
             <BsSearch size={20}/>
           </SearchFilterButton>

@@ -65,3 +65,15 @@ export const StockCompareInfo = styled.div`
   }
 
 `
+
+export const ButtonClose = styled.button`
+  color: ${lighten(0.2, '#ff0000')};
+  border: none;
+  background: #fff;
+  transition: 0.2s;
+  
+  &:hover {
+    color: #ff0000;
+    cursor: pointer;
+  }
+`

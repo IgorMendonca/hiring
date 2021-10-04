@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { AiOutlineStar } from 'react-icons/ai'
 import { useGlobalQuote } from "../../../../hooks/useGlobalQuote"
 import { SearchEndpointStockItem } from "../../../../interfaces/SearchEndpointData"

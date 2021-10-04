@@ -7,6 +7,7 @@ export interface TimeSeriesDaily {
     "5. Time Zone": string
   },
   "Time Series (Daily)": TimeSeriesDailyItem
+  Note?: string
 }
 
 export interface TimeSeriesDailyItem {
@@ -27,6 +28,7 @@ export interface TimeSeriesWeekly {
     "4. Time Zone": string
   },
   "Weekly Time Series": TimeSeriesWeeklyItem
+  Note?: string
 }
 
 export interface TimeSeriesWeeklyItem {
@@ -47,6 +49,7 @@ export interface TimeSeriesMonthly {
     "4. Time Zone": string
   },
   "Monthly Time Series": TimeSeriesMonthlyItem
+  Note?: string
 }
 
 export interface TimeSeriesMonthlyItem {

@@ -1,8 +1,9 @@
 import { format, subMonths } from "date-fns"
 import { ChangeEvent, useCallback, useState } from "react"
+import { toast } from "react-toastify"
 import { useGlobalQuote } from "../../hooks/useGlobalQuote"
 import { TimeSeriesDaily } from "../../interfaces/TimeSeries"
-import api from "../../services/api"
+import api, { apiKey } from "../../services/api"
 import { formatDataStringISO } from "../../util/format"
 import DataPicker from "../DataPicker"
 import { CalculateButton, Container, PurchasesNumberInput, SimulatorContainer } from "./styles"
@@ -34,8 +35,13 @@ const Simulator = () => {
   const searchTimeSeriesDaily = useCallback( async () => {
 
     const {data}: {data: TimeSeriesDaily} = await api.get(
-      `TIME_SERIES_DAILYIBM${process.env.REACT_APP_API_KEY}`
+      `?function=TIME_SERIES_DAILY&symbol=${globalQuote["Global Quote"]["01. symbol"]}&apikey=${apiKey}`
     )
+
+    if(data.Note) {
+      toast.error('Você só pode fazer 5 consultas por minuto')
+      return
+    }
 
     const days = Object.keys(data['Time Series (Daily)'])
 
@@ -51,7 +57,7 @@ const Simulator = () => {
 
     setSimulatorIsActive(true)
 
-  }, [dateFilter])
+  }, [dateFilter, globalQuote])
 
   return (
     <Container>

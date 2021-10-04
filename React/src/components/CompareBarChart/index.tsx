@@ -1,5 +1,6 @@
-import { AddButton, AddCompare, Container, GraphContainer, StockCompareInfo } from "./styles"
+import { AddButton, AddCompare, ButtonClose, Container, GraphContainer, StockCompareInfo } from "./styles"
 import { IoAddSharp } from 'react-icons/io5'
+import { IoCloseCircleOutline } from 'react-icons/io5'
 import { useGlobalQuote } from "../../hooks/useGlobalQuote"
 import { useEffect, useState } from "react"
 import { globalQuote } from "../../interfaces/GlobalQuote"
@@ -9,6 +10,7 @@ import produce from "immer"
 interface CardStockInfoProps {
   callModal: () => void
   stocksCompare: globalQuote[]
+  removeItemToCompare: (index: number) => void
 }
 
 const CompareBarChart = (props: CardStockInfoProps) => {
@@ -20,9 +22,9 @@ const CompareBarChart = (props: CardStockInfoProps) => {
       ['ação', 'baixa', 'preço', 'alta'],
       [
         globalQuote["Global Quote"]["01. symbol"],
-        Number(globalQuote["Global Quote"]["04. low"]).toFixed(2),
-        Number(globalQuote["Global Quote"]["05. price"]).toFixed(2),
-        Number(globalQuote["Global Quote"]["03. high"]).toFixed(2)
+        Number(Number(globalQuote["Global Quote"]["04. low"]).toFixed(2)),
+        Number(Number(globalQuote["Global Quote"]["05. price"]).toFixed(2)),
+        Number(Number(globalQuote["Global Quote"]["03. high"]).toFixed(2))
       ]
     ],
 
@@ -34,9 +36,9 @@ const CompareBarChart = (props: CardStockInfoProps) => {
         ['ação', 'baixa', 'preço', 'alta'],
         [
           globalQuote["Global Quote"]["01. symbol"],
-          Number(globalQuote["Global Quote"]["04. low"]).toFixed(2),
-          Number(globalQuote["Global Quote"]["05. price"]).toFixed(2),
-          Number(globalQuote["Global Quote"]["03. high"]).toFixed(2)
+          Number(Number(globalQuote["Global Quote"]["04. low"]).toFixed(2)),
+          Number(Number(globalQuote["Global Quote"]["05. price"]).toFixed(2)),
+          Number(Number(globalQuote["Global Quote"]["03. high"]).toFixed(2))
         ]
       ]
     ))
@@ -48,9 +50,9 @@ const CompareBarChart = (props: CardStockInfoProps) => {
     stocksCompare.forEach(stock => {
       const arrTemp: any[] = []
       const x = stock["Global Quote"]["01. symbol"]
-      const low = Number(stock["Global Quote"]["04. low"]).toFixed(2)
-      const price = Number(stock["Global Quote"]["05. price"]).toFixed(2)
-      const high = Number(stock["Global Quote"]["03. high"]).toFixed(2)
+      const low = Number(Number(stock["Global Quote"]["04. low"]).toFixed(2))
+      const price = Number(Number(stock["Global Quote"]["05. price"]).toFixed(2))
+      const high = Number(Number(stock["Global Quote"]["03. high"]).toFixed(2))
   
       arrTemp.push(x, low, price, high)
   
@@ -60,7 +62,7 @@ const CompareBarChart = (props: CardStockInfoProps) => {
         })
       )
     })
-  }, [stocksCompare, props.stocksCompare])
+  }, [stocksCompare, props.stocksCompare, globalQuote])
   
   
 
@@ -81,8 +83,17 @@ const CompareBarChart = (props: CardStockInfoProps) => {
         <GraphContainer>
           <StockCompareInfo>
             {
-              props.stocksCompare.map(stock => (
+              stocksCompare.map((stock, index) => (
                 <div>
+                  <ButtonClose
+                    onClick={() => {                     
+                      props.removeItemToCompare(index)
+                    }}
+                  >
+                    <IoCloseCircleOutline 
+                      size={25}
+                    />
+                  </ButtonClose>
                   <p>
                     {stock["Global Quote"]["01. symbol"]}
                   </p>
