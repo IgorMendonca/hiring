@@ -1,6 +1,8 @@
+import { lighten } from 'polished'
 import styled from 'styled-components'
 
 export const InfoBar = styled.div`
+  position: relative;
   padding: 5px;
   margin: 15px 5px;
   background: #fff;
@@ -62,5 +64,24 @@ export const StockTradingDateInfo = styled.div`
   & p {
     margin-top: 5px;
     color: #a0a0a0
+  }
+`
+
+export const FavoriteStock = styled.div`
+  width: 100%;
+  display: flex;
+  position: absolute;
+  justify-content: flex-start;
+  top: 5px;
+  left: 5px;
+  color: ${lighten(0.25,'#ffff00')};
+
+  .star {
+    transition: 0.3s;
+
+    &:hover {
+      color: ${lighten(0.05,'#ffff00')};
+      cursor: pointer;
+    }
   }
 `

@@ -21,6 +21,8 @@ interface propsLocation {
 }
 
 export function StockPage() {
+  const FAVORITEKEY = '@web-app/favorites'
+
   const {globalQuote, searchGlobalQuote} = useGlobalQuote()
 
   /**
@@ -42,6 +44,7 @@ export function StockPage() {
   const [loading, setLoading] = useState(false)
   const [isVisibleModal, setIsVisibleModal] = useState(false)
   const [stocksCompare, setStocksCompare] = useState<globalQuote[]>([])
+  const [favorites, setFavorites] = useState<SearchEndpointStockItem[]>([])
 
   const handleClick = useCallback( async (item: SearchEndpointStockItem) => {
     try {
@@ -65,6 +68,34 @@ export function StockPage() {
 
     }
   }, [stocksCompare])
+
+  const handleAddToPortfolio = useCallback(() => {
+    try {
+      const portfolio = localStorage.getItem(FAVORITEKEY)
+        console.log(portfolio)
+
+        toast.success('Ação removida com sucesso')
+        
+      
+      setFavorites((prev) => [params, ...prev])
+      toast.success('Adicionado com sucesso')
+    } catch (err) {
+      const message = 'Erro'
+      toast.error(message)
+    }
+  }, [favorites, params])
+
+  useEffect(() => {
+    const persistFavorite = localStorage.getItem(FAVORITEKEY)
+    if (!persistFavorite) {
+      return
+    }
+    setFavorites(JSON.parse(persistFavorite))
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(FAVORITEKEY, JSON.stringify(favorites))
+  }, [favorites])
 
   useEffect(() => {
     searchGlobalQuote()
@@ -96,6 +127,7 @@ export function StockPage() {
           <DashBoard>
             <AsideCards>
               <CardStockInfo 
+                handleClick={handleAddToPortfolio}
                 params={params}
               />
               <CardVariationPercent />

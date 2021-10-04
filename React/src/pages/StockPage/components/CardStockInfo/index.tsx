@@ -1,17 +1,18 @@
+import { useCallback } from 'react'
+import { AiOutlineStar } from 'react-icons/ai'
 import { useGlobalQuote } from "../../../../hooks/useGlobalQuote"
-import { globalQuote } from "../../../../interfaces/GlobalQuote"
 import { SearchEndpointStockItem } from "../../../../interfaces/SearchEndpointData"
 import { formatPrice } from "../../../../util/format"
-import { InfoBar, Prices, StockTradingDateInfo, Title } from "./styles"
+import { FavoriteStock, InfoBar, Prices, StockTradingDateInfo, Title } from "./styles"
 
 interface CardStockInfoProps {
   params: SearchEndpointStockItem
+  handleClick: () => void
 }
 
 const CardStockInfo = (props: CardStockInfoProps) => {
   const {globalQuote} = useGlobalQuote()
 
-  //const stockInfo = props.globalQuote["Global Quote"]
   const { params } = props
 
   return (
@@ -42,7 +43,16 @@ const CardStockInfo = (props: CardStockInfoProps) => {
       <StockTradingDateInfo>
         <span>Última negociação</span>
         <p>{globalQuote["Global Quote"]["07. latest trading day"]}</p>
-      </StockTradingDateInfo>        
+      </StockTradingDateInfo>   
+      <FavoriteStock>
+        <AiOutlineStar 
+          onClick={props.handleClick}
+          title="Adicionar ao portifólio"
+          className="star"
+          style={{position: 'absolute', left: 5, top: 5}}
+          size={35}
+        />
+      </FavoriteStock>     
     </InfoBar>
   )
 }
