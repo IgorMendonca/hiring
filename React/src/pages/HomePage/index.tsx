@@ -7,6 +7,7 @@ import { SearchEndpointStockItem } from "../../interfaces/SearchEndpointData";
 import { useHistory } from "react-router";
 
 export function HomePage() {
+  const page = '/'
   /**
    * hooks
    */
@@ -26,7 +27,7 @@ export function HomePage() {
 
   const handleClickInCardStock = useCallback((item: SearchEndpointStockItem) => {
     history.push(`/stock/${item["1. symbol"]}`, {
-      params: item
+      params: { params: item, page }
     })
   }, [history])
 

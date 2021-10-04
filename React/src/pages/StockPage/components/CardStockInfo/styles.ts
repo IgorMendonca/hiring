@@ -1,15 +1,14 @@
-import { lighten } from 'polished'
+import { darken } from 'polished'
 import styled from 'styled-components'
 
 export const InfoBar = styled.div`
   position: relative;
-  padding: 5px;
-  margin: 15px 5px;
+  margin: 10px 5px 0 5px;
   background: #fff;
   height: 25vh;
   width: 45vh;
-  border-radius: 8px;
-  box-shadow: 0 3px 3px rgba(0,0,0, 0.3);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 0 3px rgba(0,0,0, 0.3);
 
   > div {
     display: flex;
@@ -68,20 +67,22 @@ export const StockTradingDateInfo = styled.div`
 `
 
 export const FavoriteStock = styled.div`
+  margin: 0 5px 5px 5px;
+`
+
+export const ButtonAddPortfolio = styled.button`
+  box-shadow: 0 3px 3px rgba(0,0,0, 0.3);
+  border-radius: 0 0 8px 8px;
+  background: #835afd;
   width: 100%;
-  display: flex;
-  position: absolute;
-  justify-content: flex-start;
-  top: 5px;
-  left: 5px;
-  color: ${lighten(0.25,'#ffff00')};
+  padding: 5px;
+  border: none;
+  color: #eee;
+  transition: 0.3s;
 
-  .star {
-    transition: 0.3s;
-
-    &:hover {
-      color: ${lighten(0.05,'#ffff00')};
-      cursor: pointer;
-    }
+  &:hover {
+    background: ${darken(0.1, '#835afd')};
+    cursor: pointer;
   }
+
 `

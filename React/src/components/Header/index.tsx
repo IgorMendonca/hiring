@@ -10,7 +10,7 @@ export function Header() {
       <HomeButton onClick={() => history.push('/')}>
         <AiFillHome size={32}/>
       </HomeButton>
-      <Portfolio>
+      <Portfolio onClick={() => history.push('/portfolio')}>
         <h2>Portfólio</h2>
       </Portfolio>
     </HeaderContainer>

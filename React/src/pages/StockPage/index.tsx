@@ -17,7 +17,11 @@ import { toast } from "react-toastify";
 import Simulator from "../../components/Simulator";
 
 interface propsLocation {
-  params: SearchEndpointStockItem
+  params: {
+    params: SearchEndpointStockItem,
+    page: string
+  },
+
 }
 
 export function StockPage() {
@@ -36,7 +40,7 @@ export function StockPage() {
    * consts
    */
 
-  const params = state.params
+  const {params, page} = state.params
 
   /**
    * states
@@ -116,13 +120,11 @@ export function StockPage() {
 
     if(data.Note) {
       toast.error('Você só pode fazer 5 consultas por minuto')
-      history.push('/')
+      history.push(page)
       return
     }
-    console.log('1')
-
     setGlobalQuoteFunc(data)
-  }, [setGlobalQuoteFunc, history])
+  }, [setGlobalQuoteFunc, history, page])
 
   const loadData = useCallback( async () => {
       setLoading(true) 
@@ -175,6 +177,7 @@ export function StockPage() {
           <DashBoard>
             <AsideCards>
               <CardStockInfo 
+                favorites={favorites}
                 handleClick={handleAddToPortfolio}
                 params={params}
               />
