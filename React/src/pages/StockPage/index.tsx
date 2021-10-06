@@ -29,22 +29,10 @@ export function StockPage() {
 
   const {globalQuote, setGlobalQuoteFunc} = useGlobalQuote()
 
-  /**
-   * hooks
-   */
-
   const history = useHistory()
   const { state } = useLocation<propsLocation>()
 
-  /**
-   * consts
-   */
-
   const {params, page} = state.params
-
-  /**
-   * states
-   */
 
   const [loading, setLoading] = useState(false)
   const [isVisibleModal, setIsVisibleModal] = useState(false)

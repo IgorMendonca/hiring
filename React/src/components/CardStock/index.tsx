@@ -8,7 +8,9 @@ interface CardStockProps {
 
 const CardStock = (props: CardStockProps) => {
   return (
-    <Card onClick={props.handleClick}>
+    <Card 
+      onClick={props.handleClick}
+    >
       <TitleStock>
         <h3>{props.stock["1. symbol"]}</h3>
       </TitleStock>

@@ -22,8 +22,8 @@ export function Modal(props: ModalProps) {
   } as SearchEndpointData
 
   const [loading, setLoading] = useState(false)
-  const [filterStockInput, setFilterStockInput] = useState(props.filterStock)
-  const [filterStock, setFilterStock] = useState(props.filterStock)
+  const [filterStockInput, setFilterStockInput] = useState(props.filterStock || 'apple')
+  const [filterStock, setFilterStock] = useState(props.filterStock || 'apple')
   const [
     bestMatchesStockResult,
     setBestMatchesStockResult
@@ -66,16 +66,26 @@ export function Modal(props: ModalProps) {
  
   if(loading) {
     return (
-      <Loading />
+      <Loading 
+        data-testid="loading-test"
+      />
     )
   }
 
   return (
-    <ModalContainer id={props.id} onMouseDown={handleOutsideClick}>
+    <ModalContainer 
+      id={props.id} 
+      onMouseDown={handleOutsideClick}
+    >
       <Container>
         <ContentHeader>
           <Title>Buscar ações</Title>
-          <button onClick={props.onClose} ><MdClose /></button>
+          <button 
+            data-testid="button-close"
+            onClick={props.onClose} 
+          >
+            <MdClose />
+          </button>
         </ContentHeader>
         <FilterContainer>
           <FilterInput 
@@ -90,6 +100,7 @@ export function Modal(props: ModalProps) {
             }}
           />
           <SearchFilterButton 
+            data-testid="button-filter"
             onClick={() => {
               setFilterStock(state => 
                 state = filterStockInput  

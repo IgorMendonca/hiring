@@ -35,7 +35,7 @@ export const PurchasesNumberInput = styled.input`
   margin: 0 15px;
   padding: 10px;
   height: 30px;
-  width: 5%;
+  width: 20%;
   border-radius: 6px;
   border: solid 0.02px #dcdcdc;
   color: #29292e;

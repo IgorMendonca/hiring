@@ -23,7 +23,7 @@ const Simulator = () => {
     "5. volume": ''
   }
 
-  const [numberOfPurchase, setNumberOfPurchase] = useState(1)
+  const [numberOfPurchase, setNumberOfPurchase] = useState<number>()
   const [dateFilter, setDateFilter] = useState(DATE_FILTER)
   const [simulatorIsActive, setSimulatorIsActive] = useState(false)
   const [
@@ -72,6 +72,7 @@ const Simulator = () => {
           value={numberOfPurchase}
         />
         <DataPicker 
+          data-testid='datapicker-simulator'
           style={{width: '15%'}}
           value={dateFilter.startDate}
           onChange={(startDate: any) => {
@@ -79,7 +80,13 @@ const Simulator = () => {
           }}
         />
         <CalculateButton
-          onClick={searchTimeSeriesDaily}
+          onClick={() => {
+            if(!numberOfPurchase) {
+              toast.error('Informe a quantidade da compra')
+              return
+            }
+            searchTimeSeriesDaily()
+          }}
         >
           CALCULAR
         </CalculateButton>
@@ -89,6 +96,7 @@ const Simulator = () => {
             <strong>Preço na data: {Number(timeSeriesDailyItem["4. close"]).toFixed(2)}</strong>
             <strong>Preço atual: {Number(globalQuote["Global Quote"]["05. price"]).toFixed(2)}</strong>
             <strong
+              data-testid='result-simulator'
               className=
               {
                 (Number(globalQuote["Global Quote"]["05. price"]) 
@@ -103,7 +111,7 @@ const Simulator = () => {
                 : 'Perdas: '
               }
               {
-                (numberOfPurchase * (
+                ((numberOfPurchase || 1) * (
                   Number((Number(globalQuote["Global Quote"]["05. price"]) 
                   - Number(timeSeriesDailyItem["4. close"])).toFixed(2))
                 )).toFixed(2)

@@ -34,10 +34,6 @@ const LineChart = (props: propsLocation) => {
 
     setLoading(true)
 
-    setDataGraph(state => (
-      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
-    ))
-
     const {data}: {data: TimeSeriesDaily} = await api.get(
       `?function=TIME_SERIES_DAILY&symbol=${params['1. symbol']}&apikey=${apiKey}`
     )
@@ -46,6 +42,10 @@ const LineChart = (props: propsLocation) => {
       toast.error('Você só pode fazer 5 consultas por minuto')
       return
     }
+
+    setDataGraph(state => (
+      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
+    ))
 
     const days = Object.keys(data['Time Series (Daily)'])
     const result = days.filter(
@@ -78,10 +78,6 @@ const LineChart = (props: propsLocation) => {
 
     setLoading(true)
 
-    setDataGraph(state => (
-      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
-    ))
-
     const {data}: {data: TimeSeriesWeekly} = await api.get(
       `?function=TIME_SERIES_WEEKLY&symbol=${params['1. symbol']}&apikey=${apiKey}`
     )
@@ -90,6 +86,10 @@ const LineChart = (props: propsLocation) => {
       toast.error('Você só pode fazer 5 consultas por minuto')
       return
     }
+
+    setDataGraph(state => (
+      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
+    ))
 
     const days = Object.keys(data['Weekly Time Series'])
     const result = days.filter(
@@ -103,8 +103,6 @@ const LineChart = (props: propsLocation) => {
       const high = Number(data['Weekly Time Series'][day]['2. high'])
       const low = Number(data['Weekly Time Series'][day]['3. low'])
       arrTemp.push(x, close, high, low)
-
-      console.log(arrTemp)
 
       setDataGraph((prev) =>
         produce(prev, (draft) => {
@@ -123,10 +121,6 @@ const LineChart = (props: propsLocation) => {
 
     setLoading(true)
 
-    setDataGraph(state => (
-      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
-    ))
-
     const {data}: {data: TimeSeriesMonthly} = await api.get(
       `?function=TIME_SERIES_MONTHLY&symbol=${params['1. symbol']}&apikey=${apiKey}`
     )
@@ -135,6 +129,10 @@ const LineChart = (props: propsLocation) => {
       toast.error('Você só pode fazer 5 consultas por minuto')
       return
     }
+
+    setDataGraph(state => (
+      state = [[{ type: 'date', label: 'Day' }, 'Preço', 'Alta', 'Baixa']]
+    ))
 
     const days = Object.keys(data['Monthly Time Series'])
     const result = days.filter(
@@ -160,15 +158,17 @@ const LineChart = (props: propsLocation) => {
   }, [dateFilter, typeFilter, params])
 
 
-  const loadData = useCallback( async () => {
-
-    await Promise.all([searchTimeSeriesDaily(), searchTimeSeriesWeekly(), searchTimeSeriesMonthly()])
-    
-  }, [searchTimeSeriesDaily, searchTimeSeriesWeekly, searchTimeSeriesMonthly])
+  
 
   useEffect(() => {
+    const loadData = async () => {
+
+      await Promise.all([searchTimeSeriesDaily(), searchTimeSeriesWeekly(), searchTimeSeriesMonthly()])
+      
+    }
+    
     loadData()
-  }, [loadData])
+  }, [ searchTimeSeriesDaily, searchTimeSeriesWeekly, searchTimeSeriesMonthly])
 
   return (
     <Container>

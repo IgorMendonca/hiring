@@ -71,6 +71,7 @@ const CompareBarChart = (props: CardStockInfoProps) => {
       <AddCompare>
         <h2>Comparar</h2>
         <AddButton
+          data-testid='compare-button'
           onClick={() => props.callModal()}
         >
         <IoAddSharp 
@@ -84,7 +85,9 @@ const CompareBarChart = (props: CardStockInfoProps) => {
           <StockCompareInfo>
             {
               stocksCompare.map((stock, index) => (
-                <div>
+                <div
+                  key={stock["Global Quote"]["01. symbol"]}
+                >
                   <ButtonClose
                     onClick={() => {                     
                       props.removeItemToCompare(index)

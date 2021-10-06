@@ -1,5 +1,5 @@
 import { Header } from "../../components/Header";
-import { Container, Page, SearchButton, SearchStock, SearchStockContainer, SearchStockContent, TextFieldInput } from "./styles";
+import { Container, Home, Page, SearchButton, SearchStock, SearchStockContainer, SearchStockContent, TextFieldInput } from "./styles";
 import { BsSearch } from 'react-icons/bs'
 import { ChangeEvent, useCallback, useState } from "react";
 import { Modal } from "../../components/Modal";
@@ -8,22 +8,11 @@ import { useHistory } from "react-router";
 
 export function HomePage() {
   const page = '/'
-  /**
-   * hooks
-   */
 
   const history = useHistory()
 
-  /**
-   * states
-   */
-
   const [isVisibleModal, setIsVisibleModal] = useState(false)
   const [filterStock, setFilterStock] = useState('')
-
-  /**
-   * handles
-   */
 
   const handleClickInCardStock = useCallback((item: SearchEndpointStockItem) => {
     history.push(`/stock/${item["1. symbol"]}`, {
@@ -38,12 +27,15 @@ export function HomePage() {
   }, [])
 
   return (
-    <>
+    <Home
+      data-testid='home-test'
+    >
       { 
         isVisibleModal && 
-        <Modal 
+        <Modal
+          data-testid='modal-test'
           handleCardClick={(item) => handleClickInCardStock(item)}
-          filterStock={filterStock}
+          filterStock={filterStock || 'apple'}
           id="modal"
           onClose={() => setIsVisibleModal(false)}
         />
@@ -64,6 +56,7 @@ export function HomePage() {
                   onKeyPress={(e) => submitButtonInput(e)}
                 />
                 <SearchButton 
+                  data-testid='button-search'
                   onClick={() => setIsVisibleModal(true)}
                 >
                   <BsSearch size={25}/>
@@ -73,6 +66,6 @@ export function HomePage() {
           </SearchStockContainer>
         </Container>
       </Page>
-    </>
+    </Home>
   )
 }

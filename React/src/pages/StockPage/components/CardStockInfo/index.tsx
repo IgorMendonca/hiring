@@ -74,6 +74,7 @@ const CardStockInfo = (props: CardStockInfoProps) => {
       </InfoBar>
       <FavoriteStock>
         <ButtonAddPortfolio 
+          data-testid='portfolio-button'
           onClick={props.handleClick}
         >
           {inPortfolio ? 'Remover do portifólio' : 'Adicionar ao portifólio'}

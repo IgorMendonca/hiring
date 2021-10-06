@@ -7,7 +7,10 @@ export function Header() {
 
   return (
     <HeaderContainer>
-      <HomeButton onClick={() => history.push('/')}>
+      <HomeButton 
+        data-testid='home-button'
+        onClick={() => history.push('/')}
+      >
         <AiFillHome size={32}/>
       </HomeButton>
       <Portfolio onClick={() => history.push('/portfolio')}>
